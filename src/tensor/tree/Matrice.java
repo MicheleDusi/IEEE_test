@@ -1,6 +1,5 @@
 package tensor.tree;
 
-import java.util.Comparator;
 import java.util.List;
 
 import tensor.utility.MathUtility;
@@ -14,11 +13,11 @@ import tensor.utility.MathUtility;
  * @author Michele Dusi <michele.dusi.it@ieee.org>
  *
  */
-class Matrice {
+public class Matrice {
 	
 	private static final int FIRST_ELEMENT = 0;
 	
-	private static final String STRING_FORMAT_ELEMENTO = "%7.2f";
+	private static final String STRING_FORMAT_ELEMENTO = "%15.3f ";
 
 	private static final String EXCEPTION_MATRICE_NON_QUADRATA = "Errore: la matrice fornita non è quadrata.";
 	private static final String EXCEPTION_MATRICE_VUOTA = "Errore: la matrice fornita contiene una o più righe o colonne non inizializzate.";
@@ -37,8 +36,8 @@ class Matrice {
 	 * @param matrice_listata La Matrice come List bidimensionale di Double.
 	 * @throws IllegalArgumentException Se la matrice fornita come parametro è degenere o non quadrata.
 	 */
-	Matrice(List<List<Double>> matrice_listata) throws IllegalArgumentException {
-		if (matrice_listata.isEmpty() || matrice_listata.get(FIRST_ELEMENT).isEmpty()) {
+	public Matrice(List<List<Double>> matrice_listata) throws IllegalArgumentException {
+		if (matrice_listata.size() == 0 || matrice_listata.get(FIRST_ELEMENT).size() == 0) {
 			// La matrice è degenere (non contiene righe o colonne ben definite).
 			throw new IllegalArgumentException(EXCEPTION_MATRICE_VUOTA);
 			
@@ -52,31 +51,11 @@ class Matrice {
 			 */
 			this.matrice = new double [matrice_listata.size()][matrice_listata.size()];
 			for (int i = 0; i < matrice.length; i++) {
-				for (int j = 0; j < matrice.length; j++) {
+				for (int j = 0; j < matrice[0].length; j++) {
+//					System.out.println(matrice_listata.get(i).get(j));
 					this.matrice[i][j] = matrice_listata.get(i).get(j);
 				}
 			}
-		}
-	}
-	
-	/**
-	 * Costruttore che istanzia un oggetto Mriferimentoatrice dato in ingresso un array bidimensionale.
-	 * 
-	 * @param mat La Matrice da istanziare sotto forma di array bidimensionale.
-	 * @throws IllegalArgumentException Se la matrice fornita come parametro è degenere o non quadrata.
-	 */
-	Matrice(double [][] mat) throws IllegalArgumentException {
-		if (mat.length == 0 || mat[0].length == 0) {
-			// La matrice è degenere (non contiene righe o colonne ben definite).
-			throw new IllegalArgumentException(EXCEPTION_MATRICE_VUOTA);
-			
-		} else if (mat.length != mat[0].length) {
-			// La matrice fornita non è quadrata
-			throw new IllegalArgumentException(EXCEPTION_MATRICE_NON_QUADRATA);
-			
-		} else {
-			// Semplice assegnazione
-			this.matrice = mat;
 		}
 	}
 	
@@ -124,8 +103,9 @@ class Matrice {
 	 * Restituisce una descrizione completa degli elementi della matrice.
 	 * Le cifre, durante la visualizzazione, subiscono un arrotondamento alla seconda cifra decimale.
 	 * 
-	 * Nota: la classe ha come modificatore di accesso quello di default (<i>"friendly"</i>), ma questo metodo è
-	 * <i>public</i>. Questo succede perchè non è possibile ridurre la visibilità di un metodo ereditato dalla superclasse,
+	 * Nota: i metodi della classe (ad eccezione dei costruttori) hano come modifcatore di accesso quello di
+	 * default, ma questo metodo è public.
+	 * Questo succede perchè non è possibile ridurre la visibilità di un metodo ereditato dalla superclasse,
 	 * in questo caso da Object.
 	 * 
 	 * @return Matrice sotto forma di Stringa.
@@ -141,43 +121,13 @@ class Matrice {
 		}
 		return s.toString();
 	}
-
-	/**
-	 * Classe comparatore per le Matrici.
-	 * Il confronto viene effettuato sul determinante.
-	 */
-	private static class MatriceComparator implements Comparator<Matrice> {
 	
-		@Override
-		public int compare(Matrice mat1, Matrice mat2) {
-			double diff = mat1.calcolaDeterminanteGauss() - mat2.calcolaDeterminanteGauss();
-			if (MathUtility.isZero(diff)) {
-				return 0;
-			} else if (diff > 0) {
-				return 1;
-			} else {
-				return -1;
-			}
-		}
-	}
-	
-	/**
-	 * Metodo che instanzia un oggetto "MatriceComparator" e lo restituisce.
-	 * In questo modo, essendo la classe interna privata, mi assicuro che nessuno possa istanziare
-	 * un oggetto in maniera differente da quanto previsto.
-	 * 
-	 * @return Nuova istanza dell'oggetto MatriceComparator.
-	 */
-	public static MatriceComparator getComparator() {
-		return new MatriceComparator();
-	}
-	
-	// PROVA MAIN
-	public static void main (String [] args) {
-		double [][] dd = {{2,5,4},{0,0,4},{0,0,-22}};
-		Matrice matr = new Matrice(dd);
-		System.out.println(matr.toString());
-		System.out.println(String.format(STRING_FORMAT_ELEMENTO, matr.calcolaDeterminanteGauss()));
-	}
+//	// PROVA MAIN
+//	public static void main (String [] args) {
+//		double [][] dd = {{2,5,4},{0,0,4},{0,0,-22}};
+//		Matrice matr = new Matrice(dd);
+//		System.out.println(matr.toString());
+//		System.out.println(String.format(STRING_FORMAT_ELEMENTO, matr.calcolaDeterminanteGauss()));
+//	}
 	
 }

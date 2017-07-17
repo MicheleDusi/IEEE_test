@@ -1,6 +1,7 @@
 package tensor.tree;
 
-import java.util.TreeSet;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Classe che rappresenta un Tensore. All'interno dell'albero con cui lavora il programma ogni Tensore
@@ -14,17 +15,25 @@ public class Tensore extends NodoTensore {
 	private static final String EXCEPTION_DIMENSIONE_MATRICE_DIFFERENTE = "Non è possibile aggiungere una matrice di questa dimensione al tensore.";
 	private static final String EXCEPTION_TENSORE_PIENO = "Il tensore contiene già il numero corretto di matrici.";
 	
-	private TreeSet<Matrice> matrici;
+	static final String DEFAULT_LABEL = "tensor";
+	
+	private static final String INTRO_MATRICI = "Matrici:\n";
+	
+	private static final String STRING_INDICE = "TENSORE: Indice = %10.3f";
+	
+	private List<Matrice> matrici;
 	private int dimensione;
 
 	/**
-	 * Costruttore che inizializza il Tensore come vuoto, e definisce la label.
+	 * Costruttore che inizializza il Tensore come vuoto.
+	 * Non avendo label predefinit, i tensori acquisiscono come label di default il valore della
+	 * costante di classe "DEFAULT_LABEL".
 	 * 
 	 * @param _label Etichetta identificativa.
 	 */
-	public Tensore(String _label) {
-		super(_label);
-		this.matrici = new TreeSet<Matrice>(Matrice.getComparator());
+	public Tensore() {
+		super(DEFAULT_LABEL);
+		this.matrici = new ArrayList<Matrice>();
 		this.dimensione = 0;
 	}
 	
@@ -54,6 +63,11 @@ public class Tensore extends NodoTensore {
 				this.matrici.add(nuova_matrice);
 			}
 		}
+		if (this.isRoot()) {
+			this.unita_tensore = Math.min(nuova_matrice.calcolaDeterminanteGauss(), this.unita_tensore);
+		} else {
+			this.unita_tensore = Math.max(nuova_matrice.calcolaDeterminanteGauss(), this.unita_tensore);
+		}
 	}
 	
 	/**
@@ -69,31 +83,20 @@ public class Tensore extends NodoTensore {
 		return somma_indice;
 	}
 	
-	/**
-	 * Restituisce il valore dell'Unità del Tensore.
-	 * 
-	 * @return Unità del Tensore.
-	 */
-	@Override
-	public double getUnitaTensore() {
-		if (this.isRoot()) {
-			return this.matrici.last().calcolaDeterminanteGauss();
-		} else {
-			return this.matrici.first().calcolaDeterminanteGauss();
-		}
+	public List<String> getListaIndici() {
+		List<String> lista = new ArrayList<String>();
+		lista.add(String.format(STRING_INDICE, this.calcolaIndice()));
+		return lista;
 	}
 	
-	/**
-	 * Calcola la quantità TensorUnit come massimo fra i determinanti delle matrici che lo compongono.
-	 * Poichè le matrici vengono ordinate durante la costruzione, il metodo restituisce il determinante
-	 * della matrice nella prima posizione.
-	 * 
-	 * @return Unità del Tensore come double.
-	 */
-	@Override
-	@Deprecated
-	public double calcolaUnitaTensore() {
-		return this.matrici.first().calcolaDeterminanteGauss();
+	public String toString() {
+		StringBuffer s = new StringBuffer();
+		s.append(super.toString());
+		s.append(INTRO_MATRICI);
+		for (Matrice m : this.matrici) {
+			s.append(m.toString() + "\n\n");
+		}
+		return s.toString();
 	}
 	
 	

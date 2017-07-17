@@ -1,9 +1,7 @@
 package tensor.tree;
 
-import java.util.Comparator;
-import java.util.TreeSet;
-
-import tensor.utility.MathUtility;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Classe che rappresenta un nodo nell'albero di Tensori del programma. Ogni nodo contiene i riferimenti
@@ -17,28 +15,16 @@ public class NodoTensore {
 	
 	private static final String EXCEPTION_LABEL_GIA_PRESENTE = "Un nodo con label \"%s\" è già presente come figlio.";
 	
+	private static final String INTRO_NODI_FIGLI = "Nodi Figli:\n";
+	private static final String INTRO_LABEL = "LABEL: %s\n";
+	private static final String INTRO_UNITA = "NODO %s: Unità di tensore = %10.3f";
+	
 	private String label;
 	
-	private TreeSet<NodoTensore> nodi_figli;
+	private List<NodoTensore> nodi_figli;
 	private boolean is_root;
 	
-	private double unita_tensore;
-	
-	/** Classe interna che implementa un comparatore per i Tensori. */
-	private class NodoTensoreComparator implements Comparator<NodoTensore> {
-		
-		@Override
-		public int compare(NodoTensore node1, NodoTensore node2) {
-			double diff = node1.calcolaUnitaTensore() - node2.calcolaUnitaTensore();
-			if (MathUtility.isZero(diff)) {
-				return 0;
-			} else if (diff > 0) {
-				return 1;
-			} else {
-				return -1;
-			}
-		}
-	}
+	double unita_tensore;
 
 	/**
 	 * Costruttore che definisce l'etichetta del Nodo e modifica il flag che identifica la radice.
@@ -49,8 +35,32 @@ public class NodoTensore {
 	public NodoTensore(String _label, boolean _is_root) {
 		this.label = _label;
 		this.is_root = _is_root;
-		this.nodi_figli = new TreeSet<NodoTensore>(new NodoTensoreComparator());
-		this.unita_tensore = Double.MIN_VALUE;
+		this.nodi_figli = new ArrayList<NodoTensore>();
+	}
+	
+	public NodoTensore(boolean _is_root) {
+		this(null, _is_root);
+	}
+	
+	public NodoTensore() {
+		this(null, false);
+	}
+	
+	public void setRoot(boolean _is_root)  {
+		this.is_root = _is_root;
+		if (this.is_root) {
+			this.unita_tensore = Double.MAX_VALUE;
+		} else {
+			this.unita_tensore = Double.MIN_VALUE;
+		}
+	}
+	
+	public String getLabel() {
+		return this.label;
+	}
+	
+	public void setLabel(String _label) {
+		this.label = _label;
 	}
 	
 	/**
@@ -78,7 +88,7 @@ public class NodoTensore {
 			if (this.is_root) {
 				this.unita_tensore = Math.min(this.unita_tensore, nuovo_figlio.unita_tensore);
 			} else {
-				this.unita_tensore = Math.min(this.unita_tensore, nuovo_figlio.unita_tensore);
+				this.unita_tensore = Math.max(this.unita_tensore, nuovo_figlio.unita_tensore);
 			}
 		}
 	}
@@ -91,6 +101,9 @@ public class NodoTensore {
 	 */
 	public boolean contieneLabel(String label_da_cercare) {
 		// TODO Implementare ricerca ricorsiva
+		if (label_da_cercare == Tensore.DEFAULT_LABEL)
+			return false; // La Label "Tensore" funge da jolly.
+		
 		for (NodoTensore nt : this.nodi_figli) {
 			if (nt.label.equals(label_da_cercare)) {
 				return true;
@@ -117,21 +130,40 @@ public class NodoTensore {
 	}
 	
 	/**
-	 * Metodo che calcola <emph>esplicitamente</emph> l'Unità del Tensore in questione, ossia il massimo determinante
-	 * fra tutti i determinanti delle matrici det Tensori figli.
-	 * Nel caso del nodo-radice viene considerata come Unità di Tensore il minimo valore di
-	 * Unità di Tensore fra i Nodi figli diretti.
-	 * 
-	 * @return Unità del Tensore.
+	 * Restituisce una descrizione del contenuto dell'oggetto.
 	 */
-	@Deprecated
-	public double calcolaUnitaTensore() {
-		if (this.is_root) {
-			return this.nodi_figli.last().calcolaUnitaTensore(); // TODO Calcolo ricorsivo del minimo?
-		} else {
-			return this.nodi_figli.first().calcolaUnitaTensore();
+	@Override
+	public String toString() {
+		StringBuffer s = new StringBuffer();
+		s.append(String.format(INTRO_LABEL, this.label));
+		if (this.nodi_figli.size() > 0)
+			s.append(INTRO_NODI_FIGLI);
+		for (NodoTensore nt : this.nodi_figli) {
+			s.append(nt.toString());
 		}
+		return s.toString();
 	}
 	
+	/**
+	 * Restituisce la lista degli indici di ciascun Tensore dell'albero.
+	 * 
+	 * @return
+	 */
+	public List<String> getListaIndici() {
+		List<String> lista = new ArrayList<String>();
+		for (NodoTensore nt : this.nodi_figli) {
+			lista.addAll(nt.getListaIndici());
+		}
+		return lista;
+	}
+	
+	public List<String> getListaUnita() {
+		List<String> lista = new ArrayList<String>();
+		lista.add(String.format(INTRO_UNITA, this.label, this.unita_tensore));
+		for (NodoTensore nt : this.nodi_figli) {
+			lista.addAll(nt.getListaUnita());
+		}
+		return lista;
+	}
 
 }
