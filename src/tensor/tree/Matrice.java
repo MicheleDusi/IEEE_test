@@ -16,11 +16,16 @@ import tensor.utility.MathUtility;
 public class Matrice {
 	
 	private static final int FIRST_ELEMENT = 0;
+	public static final int SARRUS_DIMENSION = 3;
+	private static final int MIN_RAND_VALUE = 0;
+	private static final int MAX_RAND_VALUE = 100;
 	
 	private static final String STRING_FORMAT_ELEMENTO = "%15.3f ";
 
 	private static final String EXCEPTION_MATRICE_NON_QUADRATA = "Errore: la matrice fornita non è quadrata.";
 	private static final String EXCEPTION_MATRICE_VUOTA = "Errore: la matrice fornita contiene una o più righe o colonne non inizializzate.";
+	private static final String EXCEPTION_DIMENSIONE_SARRUS_ERRATA = "Non è possibile utilizzare l'algoritmo di Sarrus su matrici di dimensione diversa da 3";
+
 	
 	private double [][] matrice;
 	
@@ -60,11 +65,91 @@ public class Matrice {
 	}
 	
 	/**
-	 * Metodo che calcola il determinante della matrice attraverso il metodo di Gauss.
+	 * Costruttore che prende in ingresso un array bidimensionale di double e lo salva all'interno dell'oggetto
+	 * Matrice, creando un'istanza dello stesso.
+	 * 
+	 * @param matrice Matrice con cui creare l'oggetto.
+	 * @throws IllegalArgumentException
+	 */
+	public Matrice(double[][] matrice) throws IllegalArgumentException {
+		if (matrice.length == 0 || matrice[FIRST_ELEMENT].length == 0) {
+			// La matrice è degenere (non contiene righe o colonne ben definite).
+			throw new IllegalArgumentException(EXCEPTION_MATRICE_VUOTA);
+			
+		} else if (matrice.length != matrice[FIRST_ELEMENT].length) {
+			// La matrice fornita non è quadrata
+			throw new IllegalArgumentException(EXCEPTION_MATRICE_NON_QUADRATA);
+			
+		} else {
+			this.matrice = matrice;
+		}
+	}
+	
+	/**
+	 * Restituisce una matrice generata casualmente.
+	 * Questo metodo è necessario per fare i confronti sul calcolo del determinante.
+	 */
+	public static Matrice generaCasuale(int dim) {
+		double [][] matrice = new double [dim][dim];
+		for (int i = 0; i < dim; i++) {
+			for (int j = 0; j < dim; j++) {
+				matrice[i][j] = Math.random() * (MAX_RAND_VALUE - MIN_RAND_VALUE) + MIN_RAND_VALUE;
+			}
+		}
+		return new Matrice(matrice);
+	}
+
+	/**
+	 * Metodo che calcola il determinante della matrice con l'algortimo richiesto.
 	 * 
 	 * @return Determinante della matrice.
 	 */
-	double calcolaDeterminanteGauss() {
+	public double calcolaDeterminante(MathUtility.AlgoritmoPerDeterminante algo) {
+		switch(algo) {
+		case GAUSS:
+			return this.calcolaDeterminanteGauss();
+		case SARRUS:
+			if (this.matrice.length == SARRUS_DIMENSION) {
+				return this.calcolaDeterminanteSarrus();
+			} else {
+				throw new IllegalArgumentException(EXCEPTION_DIMENSIONE_SARRUS_ERRATA);
+			}
+		case AUTOMATICO:
+		default:
+			return this.calcolaDeterminante();
+		}
+	}
+
+	/**
+	 * Metodo che calcola il determinante della matrice scegliendo opportunamente di volta in volta
+	 * il metodo più conveniente in funzione della dimensione della matrice.
+	 * 
+	 * @return Determinante della matrice.
+	 */
+	public double calcolaDeterminante() {
+		/* Nota: Qui e nel metodo del calcolo del determinante con Sarrus ho preferito
+		 * lasciare indicati i numeri degli indici delle celle della matrice. Sostituirli con costanti
+		 * avrebbe appesantito il codice, e dal punto di vista matematico i numeri espliciti aiutano con
+		 * la comprensione della formula.
+		 */
+		switch (matrice.length) {
+		case 1:
+			return matrice[0][0];
+		case 2:
+			return matrice[0][0] * matrice[1][1] - matrice[1][0] * matrice[0][1];
+		case SARRUS_DIMENSION:
+			return this.calcolaDeterminanteSarrus();
+		default:
+			return this.calcolaDeterminanteGauss();
+		}
+	}
+	
+	/**
+	 * Metodo che implementa il calcolo del determinante attraverso l'algoritmo di eliminazione di Gauss.
+	 * 
+	 * @return Determinante.
+	 */
+	private double calcolaDeterminanteGauss() {
 		double determinante = 1;
 		// TODO implementazione con partenza dalla seconda riga -> un ciclo risparmiato
 		for (int k = 0; k < matrice.length; k++) {
@@ -87,6 +172,22 @@ public class Matrice {
 			}
 		}
 		return determinante;
+	}
+
+	/**
+	 * Metodo che implementa il calcolo del determinante attraverso l'algoritmo di Sarrus.
+	 * 
+	 * @return Determinante.
+	 */
+	private double calcolaDeterminanteSarrus() {
+		// So con certezza che la dimensione è 3
+		double det = matrice[0][0] * matrice[1][1] * matrice[2][2];
+		det += matrice[1][0] * matrice[2][1] * matrice[0][2];
+		det += matrice[2][0] * matrice[0][1] * matrice[1][2];
+		det -= matrice[0][0] * matrice[2][1] * matrice[1][2];
+		det -= matrice[1][0] * matrice[0][1] * matrice[2][2];
+		det -= matrice[2][0] * matrice[1][1] * matrice[0][2];
+		return det;
 	}
 	
 	/**
@@ -121,13 +222,5 @@ public class Matrice {
 		}
 		return s.toString();
 	}
-	
-//	// PROVA MAIN
-//	public static void main (String [] args) {
-//		double [][] dd = {{2,5,4},{0,0,4},{0,0,-22}};
-//		Matrice matr = new Matrice(dd);
-//		System.out.println(matr.toString());
-//		System.out.println(String.format(STRING_FORMAT_ELEMENTO, matr.calcolaDeterminanteGauss()));
-//	}
 	
 }

@@ -64,9 +64,9 @@ public class Tensore extends NodoTensore {
 			}
 		}
 		if (this.isRoot()) {
-			this.unita_tensore = Math.min(nuova_matrice.calcolaDeterminanteGauss(), this.unita_tensore);
+			this.unita_tensore = Math.min(nuova_matrice.calcolaDeterminante(), this.unita_tensore);
 		} else {
-			this.unita_tensore = Math.max(nuova_matrice.calcolaDeterminanteGauss(), this.unita_tensore);
+			this.unita_tensore = Math.max(nuova_matrice.calcolaDeterminante(), this.unita_tensore);
 		}
 	}
 	
@@ -78,7 +78,7 @@ public class Tensore extends NodoTensore {
 	public double calcolaIndice() {
 		double somma_indice = 0;
 		for (Matrice m : this.matrici) {
-			somma_indice += m.calcolaDeterminanteGauss();
+			somma_indice += m.calcolaDeterminante();
 		}
 		return somma_indice;
 	}

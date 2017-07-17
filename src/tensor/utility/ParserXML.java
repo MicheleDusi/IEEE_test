@@ -16,6 +16,13 @@ import tensor.tree.NodoTensore;
 import tensor.tree.Matrice;
 import tensor.tree.Tensore;
 
+/**
+ * Classe Parser che legge in input un file .xml, crea l'albero di NodiTensore e lo restituisce al Main.
+ * La lettura viene effettuata in blocchi separati, dove ogni blocco è responsabile della creazione di un singolo oggetto.
+ * 
+ * @author Michele Dusi <michele.dusi.it@ieee.org>
+ *
+ */
 public final class ParserXML {
 	
 	private static final int IN_BUFF_SIZE = 4096;
@@ -37,6 +44,15 @@ public final class ParserXML {
 	
 	private ParserXML() {};
 
+	/**
+	 * Metodo effettivo che si occupa del parsing.
+	 * Vedere la descrizione della classe per ulteriori informazioni.
+	 * 
+	 * @param nome_file Il nome del File da leggere.
+	 * @return
+	 * @throws FileNotFoundException
+	 * @throws XMLStreamException
+	 */
 	public static NodoTensore leggiFile(String nome_file) throws FileNotFoundException, XMLStreamException {
 		// Preparazione degli oggetti necessari
 		XMLInputFactory factory = XMLInputFactory.newFactory();

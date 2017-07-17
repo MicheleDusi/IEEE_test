@@ -38,12 +38,13 @@ public class NodoTensore {
 		this.nodi_figli = new ArrayList<NodoTensore>();
 	}
 	
+	/**
+	 * Costruttore con etichetta nulla. E' utilizzato dal parser per creare l'oggetto in più fasi.
+	 * 
+	 * @param _is_root Flag boolean che indica se il nodo creato è radice dell'albero di cui fa parte.
+	 */
 	public NodoTensore(boolean _is_root) {
 		this(null, _is_root);
-	}
-	
-	public NodoTensore() {
-		this(null, false);
 	}
 	
 	public void setRoot(boolean _is_root)  {
@@ -147,7 +148,7 @@ public class NodoTensore {
 	/**
 	 * Restituisce la lista degli indici di ciascun Tensore dell'albero.
 	 * 
-	 * @return
+	 * @return Lista di valori "Indici di Tensore".
 	 */
 	public List<String> getListaIndici() {
 		List<String> lista = new ArrayList<String>();
@@ -157,6 +158,11 @@ public class NodoTensore {
 		return lista;
 	}
 	
+	/**
+	 * Restituisce la lista delle Unità di Tensore di ciascun nodo.
+	 * 
+	 * @return Lista di valori "Unità di Tensore".
+	 */
 	public List<String> getListaUnita() {
 		List<String> lista = new ArrayList<String>();
 		lista.add(String.format(INTRO_UNITA, this.label, this.unita_tensore));
