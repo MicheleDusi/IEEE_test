@@ -25,21 +25,22 @@ public class Main {
 	private static final String STRING_TEMPI = "Tempo medio con l'algoritmo \"%s\":";
 	private static final String STRING_TEMPI_DIM = "  Matrici %dx%d: %.9f secondi.";
 
-	private static final int MAX_DIM_MATRICE = 20; // E' la massima dimensione per cui viene effettuato il calcolo dei tempi (vedi modulo 2).
+	private static final int MAX_DIM_MATRICE = 15; // E' la massima dimensione per cui viene effettuato il calcolo dei tempi (vedi modulo 2).
 	private static final double NANOS_PER_SECONDS = 1E9;
 	
 	/**
 	 * Metodo che gestisce l'esecuzione e il flusso del programma.
 	 */
 	public static void main(String[] args) throws FileNotFoundException, XMLStreamException {
-		// Eseguo i moduli per tutti i file di input.
+		// Eseguo entrambi i moduli per i file di input.
 		for (String input : INPUTS) {
 			// Modulo 1
 			modulo1(input);
-			
-			// Modulo 2
-			modulo2(input);
 		}
+		
+		//Il secondo viene eseguito solo per il primo input.
+		// Modulo 2
+		modulo2(INPUTS[0]);
 
 	}
 	
