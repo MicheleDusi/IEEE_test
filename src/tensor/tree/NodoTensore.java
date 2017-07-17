@@ -22,6 +22,8 @@ public class NodoTensore {
 	private TreeSet<NodoTensore> nodi_figli;
 	private boolean is_root;
 	
+	private double unita_tensore;
+	
 	/** Classe interna che implementa un comparatore per i Tensori. */
 	private class NodoTensoreComparator implements Comparator<NodoTensore> {
 		
@@ -48,6 +50,7 @@ public class NodoTensore {
 		this.label = _label;
 		this.is_root = _is_root;
 		this.nodi_figli = new TreeSet<NodoTensore>(new NodoTensoreComparator());
+		this.unita_tensore = Double.MIN_VALUE;
 	}
 	
 	/**
@@ -65,13 +68,18 @@ public class NodoTensore {
 	 * Il Nodo figlio viene aggiunto solo se non ne è presente già uno con la stessa etichetta, altrimenti
 	 * viene lanciata una IllegalStateException.
 	 * 
-	 * @param nuovo_nodo
+	 * @param nuovo_figlio
 	 */
-	public void aggiungiFiglio(NodoTensore nuovo_nodo) throws IllegalArgumentException {
-		if (this.contieneLabel(nuovo_nodo.label)) {
-			throw new IllegalArgumentException(String.format(EXCEPTION_LABEL_GIA_PRESENTE, nuovo_nodo.label));
+	public void aggiungiFiglio(NodoTensore nuovo_figlio) throws IllegalArgumentException {
+		if (this.contieneLabel(nuovo_figlio.label)) {
+			throw new IllegalArgumentException(String.format(EXCEPTION_LABEL_GIA_PRESENTE, nuovo_figlio.label));
 		} else {
-			this.nodi_figli.add(nuovo_nodo);
+			this.nodi_figli.add(nuovo_figlio);
+			if (this.is_root) {
+				this.unita_tensore = Math.min(this.unita_tensore, nuovo_figlio.unita_tensore);
+			} else {
+				this.unita_tensore = Math.min(this.unita_tensore, nuovo_figlio.unita_tensore);
+			}
 		}
 	}
 	
@@ -92,13 +100,31 @@ public class NodoTensore {
 	}
 	
 	/**
-	 * Metodo che calcola l'Unità del Tensore in questione, ossia il massimo determinante
+	 * Metodo che indica se il NodoTensore considerato è un nodo-radice.
+	 * 
+	 * @return TRUE se il NodoTensore ha il flag "is_root" true.
+	 */
+	public boolean isRoot() {
+		return this.is_root;
+	}
+	
+	/**
+	 * Metodo che restituisce l'Unità Tensore calcolata finora.
+	 * Non effettua calcoli poiché il valore viene aggiornato di volta in volta.
+	 */
+	public double getUnitaTensore() {
+		return this.unita_tensore;
+	}
+	
+	/**
+	 * Metodo che calcola <emph>esplicitamente</emph> l'Unità del Tensore in questione, ossia il massimo determinante
 	 * fra tutti i determinanti delle matrici det Tensori figli.
 	 * Nel caso del nodo-radice viene considerata come Unità di Tensore il minimo valore di
 	 * Unità di Tensore fra i Nodi figli diretti.
 	 * 
 	 * @return Unità del Tensore.
 	 */
+	@Deprecated
 	public double calcolaUnitaTensore() {
 		if (this.is_root) {
 			return this.nodi_figli.last().calcolaUnitaTensore(); // TODO Calcolo ricorsivo del minimo?

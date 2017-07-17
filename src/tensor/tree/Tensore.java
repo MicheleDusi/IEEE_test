@@ -70,6 +70,20 @@ public class Tensore extends NodoTensore {
 	}
 	
 	/**
+	 * Restituisce il valore dell'Unità del Tensore.
+	 * 
+	 * @return Unità del Tensore.
+	 */
+	@Override
+	public double getUnitaTensore() {
+		if (this.isRoot()) {
+			return this.matrici.last().calcolaDeterminanteGauss();
+		} else {
+			return this.matrici.first().calcolaDeterminanteGauss();
+		}
+	}
+	
+	/**
 	 * Calcola la quantità TensorUnit come massimo fra i determinanti delle matrici che lo compongono.
 	 * Poichè le matrici vengono ordinate durante la costruzione, il metodo restituisce il determinante
 	 * della matrice nella prima posizione.
@@ -77,6 +91,7 @@ public class Tensore extends NodoTensore {
 	 * @return Unità del Tensore come double.
 	 */
 	@Override
+	@Deprecated
 	public double calcolaUnitaTensore() {
 		return this.matrici.first().calcolaDeterminanteGauss();
 	}
