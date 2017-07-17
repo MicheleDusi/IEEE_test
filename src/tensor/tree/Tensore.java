@@ -83,12 +83,32 @@ public class Tensore extends NodoTensore {
 		return somma_indice;
 	}
 	
+	/**
+	 * Restituisce l'indice del tensore.
+	 */
+	@Override
 	public List<String> getListaIndici() {
 		List<String> lista = new ArrayList<String>();
 		lista.add(String.format(STRING_INDICE, this.calcolaIndice()));
 		return lista;
 	}
 	
+	/**
+	 * Restituisce tutte le Matrici di tutti i Tensori dell'albero.
+	 */
+	@Override
+	public List<Matrice> getMatrici() {
+		List<Matrice> lista = super.getMatrici();
+		lista.addAll(this.matrici);
+		return lista;
+	}
+	
+	/**
+	 * Restituisce una descrizione del Tensore come stringa.
+	 * Per ciascuna matrice in esso contenuta viene fornita la rappresentazione grafica.
+	 * 
+	 * @return Rappresentazione grafica del tensore.
+	 */
 	public String toString() {
 		StringBuffer s = new StringBuffer();
 		s.append(super.toString());

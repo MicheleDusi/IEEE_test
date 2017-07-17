@@ -89,6 +89,12 @@ public final class ParserXML {
 		return root;
 	}
 	
+	/**
+	 * Metodo che costruisce un oggetto NodoTensore dal file XML.
+	 * @param is_root
+	 * @return
+	 * @throws XMLStreamException
+	 */
 	private static NodoTensore costruisciNodoTensore(boolean is_root) throws XMLStreamException {
 		boolean is_building = true;
 		NodoTensore nodo = new NodoTensore(is_root);
@@ -118,6 +124,13 @@ public final class ParserXML {
 		return nodo;
 	}
 	
+	/**
+	 * Metodo che costruisce un oggetto Tensore leggendolo da File.
+	 * 
+	 * @return Tensore.
+	 * @throws IllegalArgumentException
+	 * @throws XMLStreamException
+	 */
 	private static Tensore costruisciTensore() throws IllegalArgumentException, XMLStreamException {
 		boolean is_building = true;
 		Tensore tensore = new Tensore();
@@ -152,6 +165,14 @@ public final class ParserXML {
 		return tensore;
 	}
 	
+	/**
+	 * Metodo per la lettura e creazione di una matrice.
+	 * E' logicamente identico ai due metodi precedenti.
+	 * 
+	 * @return Matrice letta da file XML
+	 * @throws NumberFormatException
+	 * @throws XMLStreamException
+	 */
 	private static Matrice costruisciMatrice() throws NumberFormatException, XMLStreamException {
 		boolean is_building = true;
 		List<List<Double>> temp_matrice = new ArrayList<>();

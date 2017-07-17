@@ -57,7 +57,6 @@ public class Matrice {
 			this.matrice = new double [matrice_listata.size()][matrice_listata.size()];
 			for (int i = 0; i < matrice.length; i++) {
 				for (int j = 0; j < matrice[0].length; j++) {
-//					System.out.println(matrice_listata.get(i).get(j));
 					this.matrice[i][j] = matrice_listata.get(i).get(j);
 				}
 			}
@@ -114,6 +113,8 @@ public class Matrice {
 			} else {
 				throw new IllegalArgumentException(EXCEPTION_DIMENSIONE_SARRUS_ERRATA);
 			}
+		case LAPLACE:
+			return this.calcolaDeterminanteLaplace(this.matrice);
 		case AUTOMATICO:
 		default:
 			return this.calcolaDeterminante();
@@ -151,7 +152,6 @@ public class Matrice {
 	 */
 	private double calcolaDeterminanteGauss() {
 		double determinante = 1;
-		// TODO implementazione con partenza dalla seconda riga -> un ciclo risparmiato
 		for (int k = 0; k < matrice.length; k++) {
 			// Riga di riferimento
 			
@@ -191,6 +191,55 @@ public class Matrice {
 	}
 	
 	/**
+	 * Metodo che implementa il calcolo del determinante attraverso l'algoritmo di Laplace.
+	 * Questo metodo, a defferenza degli altri, è ricorsivo e deve essere chiamato con una specifica matrice
+	 * come parametro.
+	 * 
+	 * @param matr Matrice.
+	 * @return Determinante.
+	 */
+	private double calcolaDeterminanteLaplace(double [][] matr) {
+		double det = 1;
+		if (matr.length == 1) {
+			return matr[0][0];
+		} else {
+			int uno = 1;
+			for (int i = 0; i < matr.length; i++) {
+				det += uno * matr[i][FIRST_ELEMENT] * calcolaDeterminanteLaplace(getMinore(matr, i, FIRST_ELEMENT));
+				uno = -uno;
+			}
+		}
+		return det;
+	}
+	
+	/**
+	 * Metodo utilizzato nell'implementazione dell'algoritmo di Laplace, restituisce il minore della matrice
+	 * senza la riga e la colonna indicate come parametri.
+	 * 
+	 * @param matr Matrice di cui trovare il minore.
+	 * @param riga_da_eliminare Indice della riga da eliminare.
+	 * @param colonna_da_eliminare Indice della colonna da eliminare.
+	 * @return Minore come array di double bidimensionale.
+	 */
+	private static double [][] getMinore(double [][] matr, int riga_da_eliminare, int colonna_da_eliminare) {
+		double[][] minore = new double[matr.length - 1][matr.length - 1];
+		int mi = 0, mj;
+		for (int i = 0; i < matr.length; i++) {
+			if (i != riga_da_eliminare) {
+				mj = 0;
+				for (int j = 0; j < matr.length; j++) {
+					if (j != colonna_da_eliminare) {
+						minore[mi][mj] = matr[i][j];
+						mj++;
+					}
+				}
+				mi++;
+			}
+		}
+		return minore;
+	}
+	
+	/**
 	 * Restituisce la dimensione di riga o colonna della Matrice.
 	 * I due valori sono coincidenti poiché la matrice è quadrata.
 	 * 
@@ -202,7 +251,8 @@ public class Matrice {
 	
 	/**
 	 * Restituisce una descrizione completa degli elementi della matrice.
-	 * Le cifre, durante la visualizzazione, subiscono un arrotondamento alla seconda cifra decimale.
+	 * Le cifre, durante la visualizzazione, subiscono un arrotondamento sulle cifre decimali.
+	 * (Nota: solamente nella visualizzazione).
 	 * 
 	 * Nota: i metodi della classe (ad eccezione dei costruttori) hano come modifcatore di accesso quello di
 	 * default, ma questo metodo è public.

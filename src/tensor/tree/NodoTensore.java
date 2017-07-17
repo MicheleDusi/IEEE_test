@@ -76,10 +76,11 @@ public class NodoTensore {
 	
 	/**
 	 * Metodo che collega un Nodo-figlio a questo Nodo.
-	 * Il Nodo figlio viene aggiunto solo se non ne è presente già uno con la stessa etichetta, altrimenti
-	 * viene lanciata una IllegalStateException.
+	 * Il Nodo figlio viene aggiunto solo se non ne è presente già uno con la stessa etichetta fra i figli
+	 * diretti (in questo modo ogni nodo a una rappresentazione univoca), altrimenti viene lanciata una 
+	 * IllegalStateException.
 	 * 
-	 * @param nuovo_figlio
+	 * @param nuovo_figlio Nuovo nodo da inserire.
 	 */
 	public void aggiungiFiglio(NodoTensore nuovo_figlio) throws IllegalArgumentException {
 		if (this.contieneLabel(nuovo_figlio.label)) {
@@ -98,10 +99,9 @@ public class NodoTensore {
 	 * Metodo che ricerca un nodo attraverso la sua etichetta.
 	 * 
 	 * @param label_da_cercare Label con cui effettuare i confronti.
-	 * @return TRUE se il nodo cercato è uno dei figli diretti del Nodo considerato. // TODO
+	 * @return TRUE se il nodo cercato è uno dei figli diretti del Nodo considerato.
 	 */
 	public boolean contieneLabel(String label_da_cercare) {
-		// TODO Implementare ricerca ricorsiva
 		if (label_da_cercare == Tensore.DEFAULT_LABEL)
 			return false; // La Label "Tensore" funge da jolly.
 		
@@ -168,6 +168,17 @@ public class NodoTensore {
 		lista.add(String.format(INTRO_UNITA, this.label, this.unita_tensore));
 		for (NodoTensore nt : this.nodi_figli) {
 			lista.addAll(nt.getListaUnita());
+		}
+		return lista;
+	}
+	
+	/**
+	 * Restituisce tutte le Matrici di tutti i Tensori dell'albero.
+	 */
+	public List<Matrice> getMatrici() {
+		List<Matrice> lista = new ArrayList<Matrice>();
+		for (NodoTensore nt : this.nodi_figli) {
+			lista.addAll(nt.getMatrici());
 		}
 		return lista;
 	}

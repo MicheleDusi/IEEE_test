@@ -14,7 +14,7 @@ public final class MathUtility {
 	 * Enum di utilità per esplicitare l'algoritmo per il calcolo del determinante voluto.
 	 */
 	public static enum AlgoritmoPerDeterminante {
-		GAUSS, SARRUS, AUTOMATICO;
+		GAUSS, SARRUS, LAPLACE, AUTOMATICO;
 	}
 
 	private MathUtility() {};
