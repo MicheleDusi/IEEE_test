@@ -15,6 +15,26 @@ public final class MathUtility {
 	 */
 	public static enum AlgoritmoPerDeterminante {
 		GAUSS, SARRUS, LAPLACE, AUTOMATICO;
+
+		public static int getMinDimMatrice(AlgoritmoPerDeterminante algo) {
+			switch(algo) {
+			case GAUSS: return 1;
+			case SARRUS: return 3;
+			case LAPLACE: return 1;
+			case AUTOMATICO: return 1;
+			}
+			return -1;
+		}
+		
+		public static int getMaxDimMatrice(AlgoritmoPerDeterminante algo) {
+			switch(algo) {
+			case GAUSS: return 100;
+			case SARRUS: return 3;
+			case LAPLACE: return 7;
+			case AUTOMATICO: return 100;
+			}
+			return -1;
+		}
 	}
 
 	private MathUtility() {};

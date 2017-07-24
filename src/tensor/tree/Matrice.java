@@ -16,7 +16,7 @@ import tensor.utility.MathUtility;
 public class Matrice {
 	
 	private static final int FIRST_ELEMENT = 0;
-	public static final int SARRUS_DIMENSION = 3;
+	private static final int SARRUS_DIMENSION = 3;
 	private static final int MIN_RAND_VALUE = 0;
 	private static final int MAX_RAND_VALUE = 100;
 	

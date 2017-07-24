@@ -7,7 +7,7 @@ import javax.xml.stream.XMLStreamException;
 
 import tensor.tree.Matrice;
 import tensor.tree.NodoTensore;
-import tensor.utility.MathUtility;
+import tensor.utility.MathUtility.AlgoritmoPerDeterminante;
 import tensor.utility.ParserXML;
 
 /**
@@ -18,14 +18,15 @@ import tensor.utility.ParserXML;
  */
 public class Main {
 
-	private static final String [] INPUTS = {"input_0.xml", "input_1.xml"};
+	private static final String [] INPUTS = {"input_0.xml", "input_1.xml", "input_2.xml"};
 
 	private static final String UNITA_NODI = "\nUnità di tensore per Nodi e Tensori:";
 	private static final String INDICI_TENSORI = "\nUnità di tensore:";
 	private static final String STRING_TEMPI = "Tempo medio con l'algoritmo \"%s\":";
 	private static final String STRING_TEMPI_DIM = "  Matrici %dx%d: %.9f secondi.";
+	private static final String STRING_INPUT_TITLE = "Calcolo per il file: \"%s\"";
 
-	private static final int MAX_DIM_MATRICE = 15; // E' la massima dimensione per cui viene effettuato il calcolo dei tempi (vedi modulo 2).
+	private static final int MAX_DIM_MATRICE = 100; // E' la massima dimensione per cui viene effettuato il calcolo dei tempi (vedi modulo 2).
 	private static final double NANOS_PER_SECONDS = 1E9;
 	
 	/**
@@ -34,13 +35,10 @@ public class Main {
 	public static void main(String[] args) throws FileNotFoundException, XMLStreamException {
 		// Eseguo entrambi i moduli per i file di input.
 		for (String input : INPUTS) {
-			// Modulo 1
+			System.out.println(String.format(STRING_INPUT_TITLE, input));
 			modulo1(input);
+			modulo2(input);
 		}
-		
-		//Il secondo viene eseguito solo per il primo input.
-		// Modulo 2
-		modulo2(INPUTS[0]);
 
 	}
 	
@@ -73,8 +71,8 @@ public class Main {
 		NodoTensore albero = ParserXML.leggiFile(file);
 		
 		// Preparazione delle variabili ausiliarie per il calcolo dei tempi
-		long [][] start_tempi = new long[MathUtility.AlgoritmoPerDeterminante.values().length][MAX_DIM_MATRICE];
-		long [][] media_tempi = new long[MathUtility.AlgoritmoPerDeterminante.values().length][MAX_DIM_MATRICE];
+		long [][] start_tempi = new long[AlgoritmoPerDeterminante.values().length][MAX_DIM_MATRICE];
+		long [][] media_tempi = new long[AlgoritmoPerDeterminante.values().length][MAX_DIM_MATRICE];
 		// Preparo il conteggio delle matrici per dimensione
 		int [] conteggio_matrici = new int [MAX_DIM_MATRICE];
 		for (int i = 0; i < MAX_DIM_MATRICE; i++) {
@@ -89,11 +87,12 @@ public class Main {
 			conteggio_matrici[matr.getDimensione() - 1]++;
 			
 			// Calcolo il determinante delle matrici in tutti i modi possibili
-			for (int a = 0; a < MathUtility.AlgoritmoPerDeterminante.values().length; a++) {
-				MathUtility.AlgoritmoPerDeterminante algo = MathUtility.AlgoritmoPerDeterminante.values()[a];
+			for (int a = 0; a < AlgoritmoPerDeterminante.values().length; a++) {
+				AlgoritmoPerDeterminante algo = AlgoritmoPerDeterminante.values()[a];
 				
 				start_tempi[a][matr.getDimensione() - 1] = System.nanoTime();
-				if (algo != MathUtility.AlgoritmoPerDeterminante.SARRUS || matr.getDimensione() == Matrice.SARRUS_DIMENSION) {
+				if (matr.getDimensione() >= AlgoritmoPerDeterminante.getMinDimMatrice(AlgoritmoPerDeterminante.values()[a]) &&
+						matr.getDimensione() <= AlgoritmoPerDeterminante.getMaxDimMatrice(AlgoritmoPerDeterminante.values()[a])) {
 					matr.calcolaDeterminante(algo);
 					media_tempi[a][matr.getDimensione() - 1] += System.nanoTime() - start_tempi[a][matr.getDimensione() - 1];
 				}
@@ -101,16 +100,16 @@ public class Main {
 		}
 		
 		
-		System.out.println("\n\n");
-		for (int a = 0; a < MathUtility.AlgoritmoPerDeterminante.values().length; a++) {
-			System.out.println(String.format(STRING_TEMPI, MathUtility.AlgoritmoPerDeterminante.values()[a]));
-			for (int d = 0; d < MAX_DIM_MATRICE; d++) {
-				if (conteggio_matrici[d] != 0) {
-					media_tempi[a][d] /= conteggio_matrici[d];
+		for (int a = 0; a < AlgoritmoPerDeterminante.values().length; a++) {
+			System.out.println(String.format(STRING_TEMPI, AlgoritmoPerDeterminante.values()[a]));
+			for (int d = AlgoritmoPerDeterminante.getMinDimMatrice(AlgoritmoPerDeterminante.values()[a]); d <= AlgoritmoPerDeterminante.getMaxDimMatrice(AlgoritmoPerDeterminante.values()[a]); d++) {
+				if (conteggio_matrici[d - 1] != 0) {
+					media_tempi[a][d - 1] /= conteggio_matrici[d - 1];
+					System.out.println(String.format(STRING_TEMPI_DIM, d, d, media_tempi[a][d - 1] / NANOS_PER_SECONDS));
 				}
-				System.out.println(String.format(STRING_TEMPI_DIM, d + 1, d + 1, media_tempi[a][d] / NANOS_PER_SECONDS));
 			}
 		}
+		System.out.println("\n\n");
 		
 	}
 
